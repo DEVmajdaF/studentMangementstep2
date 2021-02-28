@@ -1,0 +1,145 @@
+﻿using app1.Data;
+using app1.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace app1.Controllers
+{
+   
+    [Authorize(Roles ="Admin")]
+    public class Admin : Controller
+    {
+        ApplicationDbContext _db;
+        private readonly RoleManager<IdentityRole> _roleManager;
+      
+        public Admin(ApplicationDbContext db, RoleManager<IdentityRole> roleManager)
+        {
+            _db = db;
+            _roleManager = roleManager;
+
+
+        }
+        // GET: Admin
+       
+       
+        public ActionResult Index()
+        {
+            return View(_db.ApplicationUser.ToList());
+        }
+
+        // GET: Admin/Details/5
+        public ActionResult Details(int id)
+        {
+            return View();
+        }
+
+        // GET: Admin/Create
+        public ActionResult Create()
+        {
+            return View();
+        }
+
+        // POST: Admin/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Create(IFormCollection collection)
+        {
+            try
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            catch
+            {
+                return View();
+            }
+        }
+
+        // GET: Admin/Edit/5
+        public ActionResult Edit(int id)
+        {
+            return View();
+        }
+
+        // POST: Admin/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit(int id, IFormCollection collection)
+        {
+            try
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            catch
+            {
+                return View();
+            }
+        }
+
+        // GET: Admin/Delete/5
+        public ActionResult Delete(string id)
+        {
+            if(id == null)
+            {
+                return NotFound();
+            }
+
+            var student = _db.ApplicationUser.FirstOrDefault(m =>m.Id == id);
+            if (student ==null) {
+                return NotFound();
+            }
+
+            return View(student);
+        }
+
+        // POST: Admin/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(string id, ApplicationUser user )
+        {
+            var student = await _db.ApplicationUser.FindAsync(id);
+           // var userinfo = _db.ApplicationUser.FirstOrDefault(m => m.Id == student.Id);
+            _db.ApplicationUser.Remove(student);
+           await _db.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+
+        }
+
+        public ActionResult CreateRole(string id)
+        {
+            return View();
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> CreateRole(CreateRole model)
+        {
+            if (ModelState.IsValid)
+            {
+                IdentityRole identityRole = new IdentityRole
+                {
+                    Name = model.RoleName
+                };
+                IdentityResult Result = await _roleManager.CreateAsync(identityRole);
+                if (Result.Succeeded)
+                {
+                    return RedirectToAction("index", "Admin");
+                }
+
+                foreach (IdentityError error in Result.Errors)
+                {
+                    ModelState.AddModelError("", error.Description);
+                }
+            }
+
+            return View();
+        }
+
+
+    }
+}
+

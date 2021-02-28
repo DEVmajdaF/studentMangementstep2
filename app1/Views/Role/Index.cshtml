@@ -1,0 +1,43 @@
+﻿
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>La liste Des Roles </h1>
+<div class="col-6 text-right">
+    <h2>@ViewBag.mgs</h2>
+</div>
+<a asp-action="CreateRole" class="btn btn-info  btn-lg active" role="button" aria-pressed="true">Create New Role </a>
+<div class="d-flex justify-content-center">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                   RoleName
+                </th>
+               
+                <th>
+                    Actions
+                </th>
+
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in ViewBag.Roles)
+            {
+                <tr>
+                    <td>
+                       @item.Name
+                    </td>
+                
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
