@@ -31,9 +31,9 @@ namespace app1.Controllers
        
         public ActionResult Index()
         {
-           
-         
-            return View(_db.ApplicationUser.ToList());
+
+            var  m = _db.ApplicationUser.FromSqlRaw<ApplicationUser>("Select * From AspNetUsers").ToList();
+            return View(m);
         }
 
         // GET: Admin/Details/5
