@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using app1.Data;
+using app1.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,51 +11,63 @@ using System.Threading.Tasks;
 
 namespace app1.Controllers
 {
-    [Authorize(Roles = "Student")]
-    public class Student : Controller
+    public class AssignRoles : Controller
     {
 
-       
-        // GET: Student
+        ApplicationDbContext _db;
+        private readonly RoleManager<IdentityRole> _Role;
+         UserManager<ApplicationUser> _userManager;
+
+        public AssignRoles(ApplicationDbContext db, RoleManager<IdentityRole> roleManager)
+        {
+            _db = db;
+            _Role = roleManager;
+
+
+        }
+        // GET: HomeController1
         public ActionResult Index()
         {
             return View();
         }
 
-        // GET: Student/Details/5
+        // GET: HomeController1/Details/5
         public ActionResult Details(int id)
         {
             return View();
         }
 
-        // GET: Student/Create
-        public ActionResult Create()
+        // GET: RoleController/Create
+        public ActionResult Assign()
         {
+            ViewData["UserId"] = new SelectList(_db.ApplicationUser.ToList(), "Id", "UserName");
+            ViewData["RoleId"] = new SelectList(_Role.Roles.ToList(), "Name", "Name");
+
             return View();
         }
 
-        // POST: Student/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public async Task<ActionResult> Assign(RoleUser roleUser)
         {
-            try
+            var user = _db.ApplicationUser.FirstOrDefault(c => c.Id == roleUser.UserId);
+
+            var role = await _userManager.AddToRoleAsync(user, roleUser.RoleId);
+            if (role.Succeeded)
             {
+                TempData["save"] = "User Role Assign has been successfully";
                 return RedirectToAction(nameof(Index));
             }
-            catch
-            {
-                return View();
-            }
+            return View();
         }
 
-        // GET: Student/Edit/5
+
+        // GET: HomeController1/Edit/5
         public ActionResult Edit(int id)
         {
             return View();
         }
 
-        // POST: Student/Edit/5
+        // POST: HomeController1/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, IFormCollection collection)
@@ -67,13 +82,13 @@ namespace app1.Controllers
             }
         }
 
-        // GET: Student/Delete/5
+        // GET: HomeController1/Delete/5
         public ActionResult Delete(int id)
         {
             return View();
         }
 
-        // POST: Student/Delete/5
+        // POST: HomeController1/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id, IFormCollection collection)

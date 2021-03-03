@@ -1,7 +1,9 @@
-﻿using app1.Models;
+﻿using app1.Data;
+using app1.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,9 +15,13 @@ namespace app1.Controllers
     public class RoleController : Controller
     {
         RoleManager<IdentityRole> _Role;
-        public RoleController(RoleManager<IdentityRole> Role)
+        UserManager<IdentityUser> _userManager;
+        ApplicationDbContext _db;
+        public RoleController(RoleManager<IdentityRole> Role, ApplicationDbContext db, UserManager<IdentityUser> userManager)
         {
             _Role = Role;
+            _db = db;
+            _userManager = userManager;
         }
         // GET: RoleController
         public ActionResult Index()
@@ -45,6 +51,9 @@ namespace app1.Controllers
                 return View();
             }
         }
+
+        
+
 
         // GET: RoleController/Edit/5
         public async Task<ActionResult> Edit(string  id)

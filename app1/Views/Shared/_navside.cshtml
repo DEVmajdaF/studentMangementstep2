@@ -1,0 +1,27 @@
+﻿
+
+@if (User.IsInRole("Admin"))
+{
+
+<div id="mySidenav" class="sidenav">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+    <a href="/Role/Index">Roles</a>
+    <a href="/Admin/Index">Manage Users</a>
+    <a href="/Admin/Index">Profile</a>
+
+</div>
+
+
+}
+else
+{
+
+<div id="mySidenav" class="sidenav">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+    <a href="/Role/Index">Profile</a>
+    <a href="/Admin/Index">Student</a>
+
+</div>
+
+
+}

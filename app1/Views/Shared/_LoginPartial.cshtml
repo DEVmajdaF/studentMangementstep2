@@ -8,14 +8,37 @@
 <ul class="navbar-nav">
     @if (SignInManager.IsSignedIn(User))
     {
-        <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage"> @User.Identity.Name!</a>
-        </li>
-        <li class="nav-item">
-            <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                <button type="submit" class="nav-link btn btn-link text-dark">Logout</button>
-            </form>
-        </li>
+
+        
+    <li class="nav-item">
+        <a class="nav-link text-dark dropdown-toggle" asp-area="Identity" asp-page="/Account/Manage/Index" data-toggle="dropdown" aria-haspopup="true" title="Manage"> @User.Identity.Name!</a>
+        <div class="dropdown">
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+
+                @if (User.IsInRole("Admin"))
+                {
+
+                    <a class="dropdown-item" href="/Role/Index">Role </a>
+                    <a class="dropdown-item" href="/AssignRoles/Assign">AssignRoles </a>
+                    <a class="dropdown-item" href="/Admin/Index">Dashbord </a>
+
+                }
+                else
+                {
+                    <a class="dropdown-item" href="/Student/Index">Dashbord </a>
+                }
+
+
+                <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                    <button type="submit" class="nav-link btn btn-link text-dark">Logout</button>
+                </form>
+
+            </div>
+        </div>
+    </li>
+
+        
+
     }
     else
     {
