@@ -37,9 +37,21 @@ namespace app1.Controllers
         }
 
         // GET: Admin/Details/5
-        public ActionResult Details(int id)
+        public async Task<IActionResult> Details(string id)
         {
-            return View();
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var aspNetUser = await _db.ApplicationUser
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (aspNetUser == null)
+            {
+                return NotFound();
+            }
+
+            return View(aspNetUser);
         }
 
         // GET: Admin/Create
@@ -64,24 +76,57 @@ namespace app1.Controllers
         }
 
         // GET: Admin/Edit/5
-        public ActionResult Edit(int id)
+        public async Task<ActionResult> Edit(string id)
         {
-            return View();
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var aspNetUser = await  _db.ApplicationUser.FindAsync(id);
+            if (aspNetUser == null)
+            {
+                return NotFound();
+            }
+            return View(aspNetUser);
         }
 
         // POST: Admin/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task<IActionResult> Edit(string id, [Bind("Id,FirstName,LastName,UserName,NormalizedUserName,Email,NormalizedEmail,EmailConfirmed,PasswordHash,SecurityStamp,ConcurrencyStamp,PhoneNumber,PhoneNumberConfirmed,TwoFactorEnabled,LockoutEnd,LockoutEnabled,AccessFailedCount")] ApplicationUser user)
         {
-            try
+            if (id != user.Id)
             {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _db.Update(user);
+                    await _db.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!AspNetUserExists(user.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
                 return RedirectToAction(nameof(Index));
             }
-            catch
-            {
-                return View();
-            }
+            return View(user);
+        }
+
+        private bool AspNetUserExists(string id)
+        {
+            throw new NotImplementedException();
         }
 
         // GET: Admin/Delete/5
